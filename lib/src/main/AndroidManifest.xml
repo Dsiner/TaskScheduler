@@ -1,2 +1,1 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.d.lib.taskscheduler" />
+<manifest package="com.d.lib.taskscheduler" />
