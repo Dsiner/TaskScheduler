@@ -10,17 +10,45 @@ import com.d.lib.taskscheduler.schedule.TaskEmitter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TaskScheduler
+ * Created by D on 2018/5/15.
+ */
 public class TaskScheduler<T> {
     private Task task;
     private int subscribeScheduler = Schedulers.defaultThread();
 
-    private TaskScheduler() {
+    /**
+     * Execute sync task in main thread
+     */
+    public static void executeMain(Runnable runnable) {
+        TaskManager.getIns().executeMain(runnable);
     }
 
+    /**
+     * Execute async task in cached thread pool
+     */
+    public static void executeTask(Runnable runnable) {
+        TaskManager.getIns().executeTask(runnable);
+    }
+
+    /**
+     * Execute async task in single thread pool
+     */
+    public static void executeSingle(Runnable runnable) {
+        TaskManager.getIns().executeSingle(runnable);
+    }
+
+    /**
+     * Create task
+     */
     public static <T> TaskScheduler<T> create(final Task<T> task) {
         TaskScheduler<T> schedulers = new TaskScheduler<T>();
         schedulers.task = task;
         return schedulers;
+    }
+
+    private TaskScheduler() {
     }
 
     public TaskObserve<T> subscribeOn(@Schedulers.Scheduler int scheduler) {

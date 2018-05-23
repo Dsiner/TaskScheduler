@@ -11,14 +11,18 @@ import java.util.concurrent.Executors;
  */
 public class TaskManager {
     private static TaskManager ins;
+
     private Handler mainHandler;
-    private ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+    private ExecutorService cachedThreadPool;
+    private ExecutorService singleThreadExecutor;
 
     private TaskManager() {
         mainHandler = new Handler(Looper.getMainLooper());
+        cachedThreadPool = Executors.newCachedThreadPool();
+        singleThreadExecutor = Executors.newSingleThreadExecutor();
     }
 
-    public static TaskManager getIns() {
+    static TaskManager getIns() {
         if (ins == null) {
             synchronized (TaskManager.class) {
                 if (ins == null) {
@@ -30,16 +34,23 @@ public class TaskManager {
     }
 
     /**
-     * 执行主线程任务
+     * Execute sync task in main thread
      */
-    public void executeMainTask(Runnable runnable) {
+    void executeMain(Runnable runnable) {
         mainHandler.post(runnable);
     }
 
     /**
-     * 执行异步任务
+     * Execute async task in cached thread pool
      */
-    public void executeTask(Runnable runnable) {
+    void executeTask(Runnable runnable) {
         cachedThreadPool.execute(runnable);
+    }
+
+    /**
+     * Execute async task in single thread pool
+     */
+    void executeSingle(Runnable runnable) {
+        singleThreadExecutor.execute(runnable);
     }
 }

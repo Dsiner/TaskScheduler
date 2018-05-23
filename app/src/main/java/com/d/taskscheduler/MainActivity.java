@@ -25,15 +25,42 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tv_test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startMain();
                 startTask();
+                startSingle();
+                startCreate();
             }
         });
     }
 
-    /**
-     * Just to test
-     */
+    private void startMain() {
+        TaskScheduler.executeMain(new Runnable() {
+            @Override
+            public void run() {
+                printThread("scheduler--> executeMain");
+            }
+        });
+    }
+
     private void startTask() {
+        TaskScheduler.executeTask(new Runnable() {
+            @Override
+            public void run() {
+                printThread("scheduler--> executeTask");
+            }
+        });
+    }
+
+    private void startSingle() {
+        TaskScheduler.executeSingle(new Runnable() {
+            @Override
+            public void run() {
+                printThread("scheduler--> executeSingle");
+            }
+        });
+    }
+
+    private void startCreate() {
         TaskScheduler.create(new Task<List<String>>() {
             @Override
             public List<String> run() {

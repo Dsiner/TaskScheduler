@@ -1,10 +1,9 @@
 package com.d.lib.taskscheduler.schedule;
 
-import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.IntDef;
 
-import com.d.lib.taskscheduler.TaskManager;
+import com.d.lib.taskscheduler.TaskScheduler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -63,7 +62,7 @@ public class Schedulers {
             }).start();
             return;
         } else if (scheduler == IO) {
-            TaskManager.getIns().executeTask(new Runnable() {
+            TaskScheduler.executeTask(new Runnable() {
                 @Override
                 public void run() {
                     if (runnable != null) {
@@ -74,7 +73,7 @@ public class Schedulers {
             return;
         } else if (scheduler == MAIN_THREAD) {
             if (!isMainThread()) {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                TaskScheduler.executeMain(new Runnable() {
                     @Override
                     public void run() {
                         if (runnable != null) {
