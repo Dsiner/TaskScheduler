@@ -61,13 +61,13 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Observer<Boolean>() {
                     @Override
                     public void onNext(@NonNull Boolean result) {
-                        printThread("scheduler--> task_3: onNext");
+                        printThread("scheduler--> task_N:");
                         Toast.makeText(getApplicationContext(), "onNext", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        printThread("scheduler--> task_3: onError");
+                        printThread("scheduler--> task_E:");
                         Toast.makeText(getApplicationContext(), "onError", Toast.LENGTH_SHORT).show();
                     }
                 });

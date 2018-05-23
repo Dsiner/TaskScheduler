@@ -2,33 +2,57 @@ package com.d.lib.taskscheduler.schedule;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.IntDef;
 
 import com.d.lib.taskscheduler.TaskManager;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Schedulers
  * Created by D on 2018/5/15.
  */
-public enum Schedulers {
-    DEFAULT_THREAD, NEW_THREAD, IO, MAIN_THREAD;
+public class Schedulers {
+    final static int DEFAULT_THREAD = 0;
+    final static int NEW_THREAD = 1;
+    final static int IO = 2;
+    final static int MAIN_THREAD = 3;
 
-    public static Schedulers newThread() {
-        return Schedulers.NEW_THREAD;
+    @IntDef({DEFAULT_THREAD, NEW_THREAD, IO, MAIN_THREAD})
+    @Target({ElementType.METHOD, ElementType.PARAMETER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Scheduler {
+
     }
 
-    public static Schedulers io() {
-        return Schedulers.IO;
+    @Scheduler
+    public static int defaultThread() {
+        return DEFAULT_THREAD;
     }
 
-    public static Schedulers mainThread() {
-        return Schedulers.MAIN_THREAD;
+    @Scheduler
+    public static int newThread() {
+        return NEW_THREAD;
+    }
+
+    @Scheduler
+    public static int io() {
+        return IO;
+    }
+
+    @Scheduler
+    public static int mainThread() {
+        return MAIN_THREAD;
     }
 
     /**
      * Switch thread
      */
-    public static void switchThread(Schedulers scheduler, final Runnable runnable) {
-        if (scheduler == Schedulers.NEW_THREAD) {
+    public static void switchThread(@Scheduler int scheduler, final Runnable runnable) {
+        if (scheduler == NEW_THREAD) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -38,7 +62,7 @@ public enum Schedulers {
                 }
             }).start();
             return;
-        } else if (scheduler == Schedulers.IO) {
+        } else if (scheduler == IO) {
             TaskManager.getIns().executeTask(new Runnable() {
                 @Override
                 public void run() {
@@ -48,7 +72,7 @@ public enum Schedulers {
                 }
             });
             return;
-        } else if (scheduler == Schedulers.MAIN_THREAD) {
+        } else if (scheduler == MAIN_THREAD) {
             if (!isMainThread()) {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override

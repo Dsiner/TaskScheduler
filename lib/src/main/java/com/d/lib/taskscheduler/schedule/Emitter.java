@@ -6,5 +6,5 @@ package com.d.lib.taskscheduler.schedule;
  */
 public class Emitter {
     public Emitter emitter;
-    public Schedulers scheduler;
+    public int scheduler;
 }

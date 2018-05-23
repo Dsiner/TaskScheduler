@@ -12,7 +12,7 @@ import java.util.List;
 
 public class TaskScheduler<T> {
     private Task task;
-    private Schedulers subscribeScheduler = Schedulers.DEFAULT_THREAD;
+    private int subscribeScheduler = Schedulers.defaultThread();
 
     private TaskScheduler() {
     }
@@ -23,7 +23,7 @@ public class TaskScheduler<T> {
         return schedulers;
     }
 
-    public TaskObserve<T> subscribeOn(Schedulers scheduler) {
+    public TaskObserve<T> subscribeOn(@Schedulers.Scheduler int scheduler) {
         this.subscribeScheduler = scheduler;
         return new TaskObserve<T>(new TaskEmitter<T>(task, subscribeScheduler));
     }
@@ -31,7 +31,7 @@ public class TaskScheduler<T> {
     public static class TaskObserve<T> {
         private TaskEmitter<T> taskEmitter;
         private List<FunctionEmitter> emitters;
-        private Schedulers observeOnScheduler = Schedulers.DEFAULT_THREAD;
+        private int observeOnScheduler = Schedulers.defaultThread();
 
         private TaskObserve() {
         }
@@ -47,7 +47,7 @@ public class TaskScheduler<T> {
             this.emitters = middle.emitters;
         }
 
-        public TaskObserve<T> observeOn(Schedulers scheduler) {
+        public TaskObserve<T> observeOn(@Schedulers.Scheduler int scheduler) {
             this.observeOnScheduler = scheduler;
             return this;
         }
@@ -81,7 +81,7 @@ public class TaskScheduler<T> {
             });
         }
 
-        private static <T> void submit(final Schedulers scheduler, final T result, final Observer<T> callback) {
+        private static <T> void submit(final @Schedulers.Scheduler int scheduler, final T result, final Observer<T> callback) {
             Schedulers.switchThread(scheduler, new Runnable() {
                 @Override
                 public void run() {
