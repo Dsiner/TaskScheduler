@@ -95,32 +95,13 @@ public class TaskScheduler<T> {
                 public void run() {
                     try {
                         T t = taskEmitter.task.run();
-                        if (emitters.size() > 0) {
-                            apply(t, emitters, callback);
+                        if (assertInterrupt(t)) {
+                            submit(t, callback);
                             return;
                         }
-                        submit(observeOnScheduler, t, callback);
+                        apply(t, emitters, callback);
                     } catch (Throwable e) {
-                        if (callback != null) {
-                            callback.onError(e);
-                        }
-                    }
-                }
-            });
-        }
-
-        private static <T> void submit(final @Schedulers.Scheduler int scheduler, final T result, final Observer<T> callback) {
-            Schedulers.switchThread(scheduler, new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (callback != null) {
-                            callback.onNext(result);
-                        }
-                    } catch (Throwable e) {
-                        if (callback != null) {
-                            callback.onError(e);
-                        }
+                        error(e, callback);
                     }
                 }
             });
@@ -135,22 +116,46 @@ public class TaskScheduler<T> {
                     try {
                         F emitter = f.function.apply(o);
                         if (assertInterrupt(emitter)) {
-                            submit(observeOnScheduler, emitter, callback);
+                            submit(emitter, callback);
                             return;
                         }
                         apply(emitter, emitters, callback);
                     } catch (Throwable e) {
-                        if (callback != null) {
-                            callback.onError(e);
-                        }
+                        error(e, callback);
                     }
                 }
+            });
+        }
 
-                private boolean assertInterrupt(F emitter) throws Exception {
-                    if (emitter == null) {
-                        throw new RuntimeException("apply output must not be null!");
+        private boolean assertInterrupt(Object emitter) throws Exception {
+            if (emitter == null) {
+                throw new RuntimeException("Apply output must not be null!");
+            }
+            return emitters.size() <= 0;
+        }
+
+        private <S> void submit(final S result, final Observer<S> callback) {
+            Schedulers.switchThread(observeOnScheduler, new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (callback != null) {
+                            callback.onNext(result);
+                        }
+                    } catch (Throwable e) {
+                        error(e, callback);
                     }
-                    return emitters.size() <= 0;
+                }
+            });
+        }
+
+        private <E> void error(final Throwable e, final Observer<E> callback) {
+            Schedulers.switchThread(observeOnScheduler, new Runnable() {
+                @Override
+                public void run() {
+                    if (callback != null) {
+                        callback.onError(e);
+                    }
                 }
             });
         }
