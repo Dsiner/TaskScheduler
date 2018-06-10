@@ -15,7 +15,7 @@ import java.util.List;
  * Created by D on 2018/5/15.
  */
 public class TaskScheduler<T> {
-    private Task task;
+    private Task<T> task;
     private int subscribeScheduler = Schedulers.defaultThread();
 
     /**
@@ -57,7 +57,7 @@ public class TaskScheduler<T> {
     }
 
     public static class TaskObserve<T> {
-        private TaskEmitter<T> taskEmitter;
+        private TaskEmitter taskEmitter;
         private List<FunctionEmitter> emitters;
         private int observeOnScheduler = Schedulers.defaultThread();
 
@@ -80,9 +80,9 @@ public class TaskScheduler<T> {
             return this;
         }
 
-        public <R> TaskObserve<R> map(Function<? super T, ? extends R> f) {
-            this.emitters.add(new FunctionEmitter<T, R>(f, observeOnScheduler));
-            return new TaskObserve<R>(this);
+        public <TR> TaskObserve<TR> map(Function<? super T, ? extends TR> f) {
+            this.emitters.add(new FunctionEmitter<T, TR>(f, observeOnScheduler));
+            return new TaskObserve<TR>(this);
         }
 
         public void subscribe() {
@@ -94,7 +94,7 @@ public class TaskScheduler<T> {
                 @Override
                 public void run() {
                     try {
-                        T t = taskEmitter.task.run();
+                        Object t = taskEmitter.task.run();
                         if (assertInterrupt(t)) {
                             submit(t, callback);
                             return;
@@ -114,7 +114,7 @@ public class TaskScheduler<T> {
                 @Override
                 public void run() {
                     try {
-                        F emitter = f.function.apply(o);
+                        Object emitter = f.function.apply(o);
                         if (assertInterrupt(emitter)) {
                             submit(emitter, callback);
                             return;
@@ -134,13 +134,13 @@ public class TaskScheduler<T> {
             return emitters.size() <= 0;
         }
 
-        private <S> void submit(final S result, final Observer<S> callback) {
+        private <S> void submit(final Object result, final Observer<S> callback) {
             Schedulers.switchThread(observeOnScheduler, new Runnable() {
                 @Override
                 public void run() {
                     try {
                         if (callback != null) {
-                            callback.onNext(result);
+                            callback.onNext((S) result);
                         }
                     } catch (Throwable e) {
                         error(e, callback);
@@ -149,7 +149,7 @@ public class TaskScheduler<T> {
             });
         }
 
-        private <E> void error(final Throwable e, final Observer<E> callback) {
+        private <S> void error(final Throwable e, final Observer<S> callback) {
             Schedulers.switchThread(observeOnScheduler, new Runnable() {
                 @Override
                 public void run() {
