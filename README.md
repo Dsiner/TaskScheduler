@@ -3,12 +3,50 @@
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![API](https://img.shields.io/badge/API-9%2B-green.svg?style=flat)](https://android-arsenal.com/api?level=9)
 
+> A library to handle threads
+
 ## Getting started
+
+Execute sync task in main thread
+
+```java
+        TaskScheduler.executeMain(new Runnable() {
+            @Override
+            public void run() {
+                ...do something in main thread
+            }
+        });
+```
+
+Execute async task in cached thread pool
+
+```java
+        TaskScheduler.executeTask(new Runnable() {
+            @Override
+            public void run() {
+                ...do something in asynchronous thread
+            }
+        });
+```
+
+Execute async task in single thread pool
+
+```java
+        TaskScheduler.executeSingle(new Runnable() {
+            @Override
+            public void run() {
+                ...do something in asynchronous thread
+            }
+        });
+```
+
+Create task
+
 ```java
         TaskScheduler.create(new Task<List<String>>() {
             @Override
             public List<String> run() {
-                ...
+                ...do something in io thread
                 return new ArrayList<>();
             }
         }).subscribeOn(Schedulers.io())
@@ -16,7 +54,7 @@
                 .map(new Function<List<String>, String>() {
                     @Override
                     public String apply(@NonNull List<String> strings) throws Exception {
-                        ...
+                        ...do something in new thread, such as time-consuming, map conversion, etc.
                         return "";
                     }
                 })
@@ -24,20 +62,21 @@
                 .map(new Function<String, Boolean>() {
                     @Override
                     public Boolean apply(@NonNull String s) throws Exception {
-                        ...
+                        ...do something in io thread, such as time-consuming, map conversion, etc.
                         return true;
                     }
                 })
+                ...
                 .observeOn(Schedulers.mainThread())
                 .subscribe(new Observer<Boolean>() {
                     @Override
                     public void onNext(@NonNull Boolean result) {
-                        ...
+                        ...do something in main thread
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        ...
+                        ...do something in main thread
                     }
                 });
 ```
