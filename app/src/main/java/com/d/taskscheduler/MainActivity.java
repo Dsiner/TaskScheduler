@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.d.lib.taskscheduler.TaskScheduler;
@@ -17,27 +18,54 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private final static boolean DEBUG = false;
+    private final static String TAG = "scheduler--> ";
+
+    private TextView tvConsole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.tv_test).setOnClickListener(new View.OnClickListener() {
+        initClick();
+    }
+
+    private void initClick() {
+        View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startMain();
-                startTask();
-                startSingle();
-                startCreate();
+                switch (v.getId()) {
+                    case R.id.tv_main:
+                        tvConsole.setText("----- Start Main -----\n");
+                        startMain();
+                        break;
+                    case R.id.tv_single:
+                        tvConsole.setText("----- Start Single -----\n");
+                        startSingle();
+                        break;
+                    case R.id.tv_task:
+                        tvConsole.setText("----- Start Task -----\n");
+                        startTask();
+                        break;
+                    case R.id.tv_create:
+                        tvConsole.setText("----- Start Create -----\n");
+                        startCreate();
+                        break;
+                }
             }
-        });
+        };
+        tvConsole = (TextView) findViewById(R.id.tv_console);
+        findViewById(R.id.tv_main).setOnClickListener(onClickListener);
+        findViewById(R.id.tv_single).setOnClickListener(onClickListener);
+        findViewById(R.id.tv_task).setOnClickListener(onClickListener);
+        findViewById(R.id.tv_create).setOnClickListener(onClickListener);
     }
 
     private void startMain() {
         TaskScheduler.executeMain(new Runnable() {
             @Override
             public void run() {
-                printThread("scheduler--> executeMain");
+                printThread("executeMain:");
             }
         });
     }
@@ -46,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         TaskScheduler.executeTask(new Runnable() {
             @Override
             public void run() {
-                printThread("scheduler--> executeTask");
+                printThread("executeTask:");
             }
         });
     }
@@ -55,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         TaskScheduler.executeSingle(new Runnable() {
             @Override
             public void run() {
-                printThread("scheduler--> executeSingle");
+                printThread("executeSingle:");
             }
         });
     }
@@ -64,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         TaskScheduler.create(new Task<List<String>>() {
             @Override
             public List<String> run() {
-                printThread("scheduler--> task_0");
+                printThread("task-0:");
                 return new ArrayList<>();
             }
         }).subscribeOn(Schedulers.io())
@@ -72,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 .map(new Function<List<String>, String>() {
                     @Override
                     public String apply(@NonNull List<String> strings) throws Exception {
-                        printThread("scheduler--> task_1");
+                        printThread("task-1:");
                         return "";
                     }
                 })
@@ -80,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 .map(new Function<String, Boolean>() {
                     @Override
                     public Boolean apply(@NonNull String s) throws Exception {
-                        printThread("scheduler--> task_2");
+                        printThread("task-2:");
                         return true;
                     }
                 })
@@ -88,13 +116,13 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Observer<Boolean>() {
                     @Override
                     public void onNext(@NonNull Boolean result) {
-                        printThread("scheduler--> task_N:");
+                        printThread("task-n:");
                         Toast.makeText(getApplicationContext(), "onNext", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        printThread("scheduler--> task_E:");
+                        printThread("task_e:");
                         Toast.makeText(getApplicationContext(), "onError", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -103,7 +131,18 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Print current thread
      */
-    public static void printThread(String tag) {
-        Log.d("Thread", tag + " " + Thread.currentThread().getId() + "--NAME--" + Thread.currentThread().getName());
+    public void printThread(String tag) {
+        final String print = tag + " " + Thread.currentThread().getId() + "--NAME--" + Thread.currentThread().getName();
+        if (DEBUG) {
+            Log.d("Thread", TAG + print);
+        } else {
+            TaskScheduler.executeMain(new Runnable() {
+                @Override
+                public void run() {
+                    tvConsole.append("--> " + print);
+                    tvConsole.append("\n");
+                }
+            });
+        }
     }
 }

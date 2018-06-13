@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![API](https://img.shields.io/badge/API-9%2B-green.svg?style=flat)](https://android-arsenal.com/api?level=9)
 
-> A library to handle threads
+> TaskScheduler is a library for composing asynchronous and event-based programs by using observable sequences.
 
 ## Getting started
 
