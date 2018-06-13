@@ -40,6 +40,13 @@ public class TaskScheduler<T> {
     }
 
     /**
+     * Execute async task in a new thread
+     */
+    public static void executeNew(Runnable runnable) {
+        TaskManager.getIns().executeNew(runnable);
+    }
+
+    /**
      * Create task
      */
     public static <T> TaskScheduler<T> create(final Task<T> task) {
