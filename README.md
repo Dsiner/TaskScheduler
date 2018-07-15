@@ -5,6 +5,20 @@
 
 > TaskScheduler is a library for composing asynchronous and event-based programs by using observable sequences.
 
+## Use
+Maven:
+```xml
+<dependency>
+  <groupId>com.dsiner.lib</groupId>
+  <artifactId>taskscheduler</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+or Gradle:
+```groovy
+compile 'com.dsiner.lib:taskscheduler:1.0.0'
+```
+
 ## Getting started
 
 Execute sync task in main thread
