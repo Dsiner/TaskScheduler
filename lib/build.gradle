@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+// bintray step2:add this apply
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 27
@@ -27,3 +29,23 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     compileOnly 'com.android.support:appcompat-v7:27.1.1'
 }
+
+// bintray step3:add publish info
+publish {
+    userOrg = 'dsiner'                  // bintray注册的用户名
+    groupId = 'com.dsiner.lib'          // compile引用时的第1部分groupId
+    artifactId = 'taskscheduler'        // compile引用时的第2部分项目名
+    publishVersion = '1.0.0'            // compile引用时的第3部分版本号
+
+    // 描述，不重要
+    desc = 'TaskScheduler is a library for composing asynchronous and event-based programs by using observable sequences.'
+    // 网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
+    website = 'https://github.com/Dsiner/TaskScheduler'
+}
+
+// bintray step4:Terminal
+//./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
+//参数说明：
+//-PbintrayUser=BINTRAY_USERNAME    // 用户名
+//-PbintrayKey=BINTRAY_KEY          // key
+//-PdryRun=false                    // 当为true的时候，会运行所有的环节，但是不会上传
