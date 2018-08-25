@@ -12,12 +12,12 @@ Maven:
 <dependency>
   <groupId>com.dsiner.lib</groupId>
   <artifactId>taskscheduler</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'com.dsiner.lib:taskscheduler:1.0.0'
+compile 'com.dsiner.lib:taskscheduler:1.0.1'
 ```
 
 ## Getting started
@@ -80,7 +80,7 @@ Create task
                 .map(new Function<List<String>, String>() {
                     @Override
                     public String apply(@NonNull List<String> strings) throws Exception {
-                        ...do something in new thread, such as time-consuming, map conversion, etc.
+                        ...do something in a new thread, such as time-consuming, map conversion, etc.
                         return "";
                     }
                 })
