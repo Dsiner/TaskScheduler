@@ -2,6 +2,7 @@ package com.d.lib.taskscheduler.schedule;
 
 import android.os.Looper;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 
 import com.d.lib.taskscheduler.TaskScheduler;
 
@@ -48,43 +49,21 @@ public class Schedulers {
     }
 
     /**
-     * Switch thread
+     * Executes the given runnable at some time in the future.
+     * The runnable may execute in a new thread, in a pooled thread, or in the calling thread
      */
-    public static void switchThread(@Scheduler final int scheduler, final Runnable r) {
+    public static void switchThread(@Scheduler final int scheduler, @NonNull final Runnable runnable) {
         if (scheduler == NEW_THREAD) {
-            TaskScheduler.executeNew(new Runnable() {
-                @Override
-                public void run() {
-                    if (r != null) {
-                        r.run();
-                    }
-                }
-            });
+            TaskScheduler.executeNew(runnable);
             return;
         } else if (scheduler == IO) {
-            TaskScheduler.executeTask(new Runnable() {
-                @Override
-                public void run() {
-                    if (r != null) {
-                        r.run();
-                    }
-                }
-            });
+            TaskScheduler.executeTask(runnable);
             return;
         } else if (scheduler == MAIN_THREAD) {
-            TaskScheduler.executeMain(new Runnable() {
-                @Override
-                public void run() {
-                    if (r != null) {
-                        r.run();
-                    }
-                }
-            });
+            TaskScheduler.executeMain(runnable);
             return;
         }
-        if (r != null) {
-            r.run();
-        }
+        runnable.run();
     }
 
     public static boolean isMainThread() {

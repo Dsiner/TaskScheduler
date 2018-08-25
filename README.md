@@ -55,6 +55,17 @@ Execute async task in single thread pool
         });
 ```
 
+Execute async task in a new thread
+
+```java
+        TaskScheduler.executeNew(new Runnable() {
+            @Override
+            public void run() {
+                ...do something in asynchronous thread
+            }
+        });
+```
+
 Create task
 
 ```java
@@ -95,6 +106,9 @@ Create task
                     }
                 });
 ```
+
+## Latest Changes
+- [Changelog.md](CHANGELOG.md)
 
 ## Licence
 
