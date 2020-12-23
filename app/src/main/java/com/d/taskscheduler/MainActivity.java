@@ -18,47 +18,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private final static boolean DEBUG = false;
-    private final static String TAG = "scheduler--> ";
+    private static final boolean DEBUG = false;
+    private static final String TAG = "scheduler--> ";
 
-    private TextView tvConsole;
+    private TextView tv_console;
+
+    private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.tv_main:
+                    tv_console.setText("----- Start Main -----\n");
+                    startMain();
+                    break;
+
+                case R.id.tv_single:
+                    tv_console.setText("----- Start Single -----\n");
+                    startSingle();
+                    break;
+
+                case R.id.tv_task:
+                    tv_console.setText("----- Start Task -----\n");
+                    startTask();
+                    break;
+
+                case R.id.tv_create:
+                    tv_console.setText("----- Start Create -----\n");
+                    startCreate();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initClick();
+        bindView();
     }
 
-    private void initClick() {
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.tv_main:
-                        tvConsole.setText("----- Start Main -----\n");
-                        startMain();
-                        break;
-                    case R.id.tv_single:
-                        tvConsole.setText("----- Start Single -----\n");
-                        startSingle();
-                        break;
-                    case R.id.tv_task:
-                        tvConsole.setText("----- Start Task -----\n");
-                        startTask();
-                        break;
-                    case R.id.tv_create:
-                        tvConsole.setText("----- Start Create -----\n");
-                        startCreate();
-                        break;
-                }
-            }
-        };
-        tvConsole = (TextView) findViewById(R.id.tv_console);
-        findViewById(R.id.tv_main).setOnClickListener(onClickListener);
-        findViewById(R.id.tv_single).setOnClickListener(onClickListener);
-        findViewById(R.id.tv_task).setOnClickListener(onClickListener);
-        findViewById(R.id.tv_create).setOnClickListener(onClickListener);
+    private void bindView() {
+        tv_console = (TextView) findViewById(R.id.tv_console);
+
+        findViewById(R.id.tv_main).setOnClickListener(mOnClickListener);
+        findViewById(R.id.tv_single).setOnClickListener(mOnClickListener);
+        findViewById(R.id.tv_task).setOnClickListener(mOnClickListener);
+        findViewById(R.id.tv_create).setOnClickListener(mOnClickListener);
     }
 
     private void startMain() {
@@ -132,15 +137,17 @@ public class MainActivity extends AppCompatActivity {
      * Print current thread
      */
     public void printThread(String tag) {
-        final String print = tag + " " + Thread.currentThread().getId() + "--NAME--" + Thread.currentThread().getName();
+        final String print = tag + " "
+                + Thread.currentThread().getId()
+                + "--NAME--" + Thread.currentThread().getName();
         if (DEBUG) {
             Log.d("Thread", TAG + print);
         } else {
             TaskScheduler.executeMain(new Runnable() {
                 @Override
                 public void run() {
-                    tvConsole.append("--> " + print);
-                    tvConsole.append("\n");
+                    tv_console.append("--> " + print);
+                    tv_console.append("\n");
                 }
             });
         }

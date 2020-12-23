@@ -11,21 +11,17 @@ import java.util.concurrent.RejectedExecutionException;
  * TaskManager
  */
 public class TaskManager {
-    private Handler mainHandler;
-    private ExecutorService cachedThreadPool;
-    private ExecutorService singleThreadExecutor;
-
-    private static class Singleton {
-        private final static TaskManager INSTANCE = new TaskManager();
-    }
+    private Handler mMainHandler;
+    private ExecutorService mCachedThreadPool;
+    private ExecutorService mSingleThreadExecutor;
 
     private TaskManager() {
-        mainHandler = new Handler(Looper.getMainLooper());
-        cachedThreadPool = Executors.newCachedThreadPool();
-        singleThreadExecutor = Executors.newSingleThreadExecutor();
+        mMainHandler = new Handler(Looper.getMainLooper());
+        mCachedThreadPool = Executors.newCachedThreadPool();
+        mSingleThreadExecutor = Executors.newSingleThreadExecutor();
     }
 
-    static TaskManager getIns() {
+    static TaskManager getInstance() {
         return Singleton.INSTANCE;
     }
 
@@ -34,7 +30,7 @@ public class TaskManager {
      * The runnable will be run in the main thread
      */
     boolean postMain(Runnable command) {
-        return mainHandler.post(command);
+        return mMainHandler.post(command);
     }
 
     /**
@@ -42,7 +38,7 @@ public class TaskManager {
      * The runnable will be run in the main thread
      */
     boolean postMainDelayed(Runnable command, long delayMillis) {
-        return mainHandler.postDelayed(command, delayMillis);
+        return mMainHandler.postDelayed(command, delayMillis);
     }
 
     /**
@@ -55,7 +51,7 @@ public class TaskManager {
             }
             return;
         }
-        mainHandler.post(command);
+        mMainHandler.post(command);
     }
 
     /**
@@ -66,7 +62,7 @@ public class TaskManager {
      * @throws NullPointerException       if command is null
      */
     void executeTask(Runnable command) {
-        cachedThreadPool.execute(command);
+        mCachedThreadPool.execute(command);
     }
 
     /**
@@ -77,7 +73,7 @@ public class TaskManager {
      * @throws NullPointerException       if command is null
      */
     void executeSingle(Runnable command) {
-        singleThreadExecutor.execute(command);
+        mSingleThreadExecutor.execute(command);
     }
 
     /**
@@ -89,5 +85,9 @@ public class TaskManager {
      */
     void executeNew(Runnable command) {
         new Thread(command).start();
+    }
+
+    private static class Singleton {
+        private static final TaskManager INSTANCE = new TaskManager();
     }
 }
