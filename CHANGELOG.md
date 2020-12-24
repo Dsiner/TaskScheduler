@@ -1,6 +1,10 @@
 Changelog
 --------------------------------
 
+Version: 1.0.2
+--------------------------------
+- targetSdkVersion 27
+
 Version: 1.0.1
 --------------------------------
 - Support executeNew, postMain, postMainDelayed
